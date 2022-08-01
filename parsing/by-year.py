@@ -81,7 +81,7 @@ for filename in filenames:
 	df3 = df3.drop(['date'], axis=1)
 	
 	df3 = df3.rename(columns={"short_date":"date"}) 
-	df3[['year','date','rainfall']].to_csv(f'../charts/assets/{filename}-year.csv', index=False)
+	df3[['year','date','rainfall']].to_csv(f'../circular-chart/assets/{filename}-year.csv', index=False)
 
 #%%
 
@@ -179,7 +179,7 @@ river2['Mean'] = river2['Mean'].str.strip()
 
 river2 = river2[river2['year'] != "1988"]
 
-river2[['date','year','Max']].to_csv('../charts/assets/north-richmond.csv', index=False)
+river2[['date','year','Max']].to_csv('../circular-chart/assets/north-richmond.csv', index=False)
 
 #%%
 
@@ -214,7 +214,7 @@ river2['Mean'] = river2['Mean'].str.strip()
 
 # river2 = river2[river2['year'] != "1988"]
 
-river2[['date','year','Max']].to_csv('../charts/assets/penrith.csv', index=False)
+river2[['date','year','Max']].to_csv('../circular-chart/assets/penrith.csv', index=False)
 
 #%%
 
@@ -249,7 +249,7 @@ river2['Mean'] = river2['Mean'].str.strip()
 
 # river2 = river2[river2['year'] != "1988"]
 
-river2[['date','year','Max']].to_csv('../charts/assets/shoalhaven.csv', index=False)
+river2[['date','year','Max']].to_csv('../circular-chart/assets/shoalhaven.csv', index=False)
 
 
 
