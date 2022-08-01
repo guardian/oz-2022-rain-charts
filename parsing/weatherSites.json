@@ -1,0 +1,4 @@
+[
+{"name":"Gympie, QLD","url":"http://www.bom.gov.au/jsp/ncc/cdio/weatherData/av?p_display_type=dailyZippedDataFile&p_stn_num=040093&p_c=-321492283&p_nccObsCode=136&p_startYear=2022","startYear":1900},
+{"name":"Brisbane","url":"http://www.bom.gov.au/jsp/ncc/cdio/weatherData/av?p_display_type=dailyZippedDataFile&p_stn_num=040224&p_c=-323596588&p_nccObsCode=136&p_startYear=2022","startYear":1900},
+]
