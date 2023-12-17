@@ -28,7 +28,7 @@ export function radial(results, type, chartId, animationSpeed) {
 	width = width,
     height = width;
 
-  var chartKey = context.select("#chartKey");
+  	var chartKey = context.select("#chartKey");
 	var dateParse = d3.timeParse("%Y-%m-%d")
 	
 	results.forEach(d => {

@@ -1,7 +1,7 @@
 import * as d3 from "d3"
 
-export function cumulative(results, chartId) {
-
+export function cumulative(results, chartId, maxValue, maxYear) {
+	console.log("maxValue", maxValue)
 	const container = d3.select(`.rainfall #graphicContainer`)
 
 	console.log(results)
@@ -16,7 +16,7 @@ export function cumulative(results, chartId) {
         if ( num > 0 ) {
             if ( num > 1000000000 ) { return ( num / 1000000000 ) + 'bn' }
             if ( num >= 1000000 ) { return ( num / 1000000 ) + 'm' }
-            if ( num > 1000 ) { return ( num / 1000 ) + 'k' }
+            if ( num >= 1000 ) { return ( num / 1000 ) + 'k' }
             if (num % 1 != 0) { return num.toFixed(2) }
             else { return num.toLocaleString() }
         }
@@ -43,7 +43,12 @@ export function cumulative(results, chartId) {
 
 	var width = document.querySelector(`.rainfall #graphicContainer`).getBoundingClientRect().width
 
-	var height = width*0.6				
+	var height = width*0.6
+
+	if (windowWidth < 500) {
+		height = width * 1
+	}
+
 	var margin = {top: 20, right: 105, bottom: 20, left:45}
 
 	var dateParse = d3.timeParse("%Y-%m-%d")
@@ -241,10 +246,10 @@ export function cumulative(results, chartId) {
 	// 	min = d3.min(allValues);
 	// }
 
-
+	allValues.push(maxValue)
 
 	x.domain(d3.extent(data, function(d) { return d[xVar]; }));
-	y.domain([0, d3.max(allValues)])
+	y.domain([0, d3.max(allValues) + 0.05 * d3.max(allValues)])
 
 	var xAxis;
 	var yAxis;
@@ -253,12 +258,12 @@ export function cumulative(results, chartId) {
 
 	if (isMobile) {
 		xAxis = d3.axisBottom(x).ticks(xTicks)
-		yAxis = d3.axisLeft(y).tickFormat(function (d) { return numberFormat(d)}).ticks(5);
+		yAxis = d3.axisLeft(y).tickSize(-width).tickFormat(function (d) { return numberFormat(d)}).ticks(5);
 	}
 
 	else {
 		xAxis = d3.axisBottom(x).ticks(xTicks)
-		yAxis = d3.axisLeft(y).tickFormat(function (d) { return numberFormat(d)});
+		yAxis = d3.axisLeft(y).tickSize(-width).tickFormat(function (d) { return numberFormat(d)}).ticks(5);
 	}
 
 
@@ -282,14 +287,17 @@ export function cumulative(results, chartId) {
 	features.append("g")
 		.attr("class","y")
 		.call(yAxis)
+		.style("stroke-dasharray", "2 2")  
 
-	features.append("text")
-		.attr("transform", "rotate(-90)")
-		.attr("y", 6)
-		.attr("dy", "0.71em")
-		.attr("fill", "#767676")
-		.attr("text-anchor", "end")
-		.text("Cumulative rainfall (mm)");
+	features.select(".y .domain").remove()    
+
+	// features.append("text")
+	// 	.attr("transform", "rotate(-90)")
+	// 	.attr("y", 6)
+	// 	.attr("dy", "0.71em")
+	// 	.attr("fill", "#767676")
+	// 	.attr("text-anchor", "end")
+	// 	.text("Cumulative rainfall (mm)");
 
 	// features.append("text")
 	// 	.attr("x", width)
@@ -341,6 +349,23 @@ export function cumulative(results, chartId) {
 			.attr("stroke", "none")
 			.attr("d", area4)		
 
+	features.append("line")
+			.attr("class", "maxLine")
+			.attr("x1", (d) => x(x.domain()[0]))
+			.attr("y1", (d) => y(maxValue))
+			.attr("x2", (d) => x(x.domain()[1]))
+			.attr("y2", (d) => y(maxValue))
+			.attr("stroke", "#000")
+			.attr("stroke-dasharray", "2,4")
+			.attr("stroke-width", 1)		
+			
+	features.append("text")
+			.attr("x", x(x.domain()[0]))
+			.attr("y", y(maxValue) - 5)
+			// .attr("text-anchor", "start")
+			.attr("class", "lineText")
+			.attr("opacity", 1)
+			.text(`Highest yearly total on record - ${maxValue.toLocaleString()}mm in ${maxYear}`)	
 
 		// console.log(keyData[key])
 
