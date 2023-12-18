@@ -5,9 +5,9 @@
 
 import pandas as pd
 
-filenames = ['observatory-hill']
+filenames = ['kuranda']
 # filenames = ['observatory-hill']
-filename = 'observatory-hill'
+filename = 'kuranda'
 # filename = 'parramatta'
 
 # for filename in filenames:
@@ -25,14 +25,17 @@ df['quarter'] = df['date'].dt.quarter
 df['fy'] = df['date'].dt.to_period('Q-JUN').dt.qyear.apply(lambda x: str(x-1) + "-" + str(x))
 df['season'] = df['date'].dt.month%12 // 3 + 1
 
+#%%
+
 df2 = df[df['short_date'] != "1900-2-29"].copy()
 
 # df2 = df
 df2['rainfall'] = df2['Rainfall amount (millimetres)']/df2['Period over which rainfall was measured (days)']
 df2['rainfall'] = df2['rainfall'].fillna(0)
 
-df2['rainfall_cum'] = df2.groupby(['Year'])['rainfall'].apply(lambda x: x.cumsum())
+df2['rainfall_cum'] = df2.groupby(['Year'])['rainfall'].cumsum()
 
+#%%
 df2 = df2.rename(columns={"Year": "year"})
 
 df2['year'] = pd.to_numeric(df2['year'])
@@ -54,22 +57,22 @@ summer = df2[df2['season'] == 1]
 
 summer_totals = summer[['fy','rainfall']].groupby(['fy']).sum()
 
-short = df2[['rainfall_cum','date','short_date','year','fy']]
+short = df2[['rainfall_cum','date','short_date','year']]
 
-totals = short[short['year'] != 2022].groupby(['short_date']).median()
-
+totals = short[short['year'] != 2023].groupby(['short_date']).median()
+totals = totals.drop(labels='date', axis=1)
 totals = totals.rename(columns={'rainfall_cum': "Median"})
 
-totals['Very dry'] = short[short['year'] != 2022].groupby(['short_date']).quantile(0.10)['rainfall_cum']
+totals['Very dry'] = short[short['year'] != 2023].groupby(['short_date']).quantile(0.10)['rainfall_cum']
 
-totals['Very wet'] = short[short['year'] != 2022].groupby(['short_date']).quantile(0.90)['rainfall_cum']
-totals['Extremely dry'] = short[short['year'] != 2022].groupby(['short_date']).quantile(0.01)['rainfall_cum']
+totals['Very wet'] = short[short['year'] != 2023].groupby(['short_date']).quantile(0.90)['rainfall_cum']
+totals['Extremely dry'] = short[short['year'] != 2023].groupby(['short_date']).quantile(0.01)['rainfall_cum']
 
-totals['Extremely wet'] = short[short['year'] != 2022].groupby(['short_date']).quantile(0.99)['rainfall_cum']
+totals['Extremely wet'] = short[short['year'] != 2023].groupby(['short_date']).quantile(0.99)['rainfall_cum']
     
-current_rainfall = df2[df2['year'] == 2022].copy().set_index('short_date')
+current_rainfall = df2[df2['year'] == 2023].copy().set_index('short_date')
 
-totals['2022 to date'] = current_rainfall['rainfall_cum']
+totals['2023 to date'] = current_rainfall['rainfall_cum']
 
 maxes = short.copy()
 maxes = maxes[maxes['short_date'] == '1900-12-31']
@@ -145,22 +148,22 @@ to_date = df3[df3['short_date'] == '1900-04-07']
 
 #%%
 
-# import plotly.graph_objects as go
+import plotly.graph_objects as go
 
-# fig = go.Figure()
+fig = go.Figure()
 
-# fig.add_trace(go.Scatter(x=totals['date'], y=totals['Q3'], name="90th percentile")) # fill down to xaxis
-# fig.add_trace(go.Scatter(x=totals['date'], y=totals['median'], name="Median rainfall", fill='tonexty'))
-# fig.add_trace(go.Scatter(x=totals['date'], y=totals['Q1'], name="10th percent", fill='tonexty'))
-# fig.add_trace(go.Scatter(x=totals['date'], y=totals['Current'], name="2021 rainfall"))
+fig.add_trace(go.Scatter(x=totals['date'], y=totals['Very wet'], name="Very wet")) # fill down to xaxis
+fig.add_trace(go.Scatter(x=totals['date'], y=totals['Median'], name="Median rainfall", fill='tonexty'))
+fig.add_trace(go.Scatter(x=totals['date'], y=totals['Very dry'], name="Very dry", fill='tonexty'))
+fig.add_trace(go.Scatter(x=totals['date'], y=totals['2023 to date'], name="2023 to date"))
 
-# fig.update_layout(
-# 	title="Cumulative rainfall for Port Macqurie"
-# )
+fig.update_layout(
+ 	title="Cumulative rainfall for Cairns"
+)
 
-# fig.show()
+fig.write_html("blah.html")
 
-# #%%
+#%%
 
 # Richmond
 
